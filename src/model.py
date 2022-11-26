@@ -22,7 +22,7 @@ def model(x,t):
     return [dx[0,0],dx[1,0]]
 #definnig time 
 t = np.linspace(0, 10, 2000)
-res = odeint(model,[0,],t)
+res = odeint(model,[0,0],t)
 
 plt.figure()
 plt.title("DC motor simulation")
