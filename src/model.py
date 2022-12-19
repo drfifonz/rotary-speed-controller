@@ -11,9 +11,12 @@ b = 0.0002  # friction
 k_ME = 0.1  # factor converting mechanical energy into electrical
 k_EM = 0.1  # factor converting electrical energy into mechanical
 
+# current limitation
+CURRENT_LIMIT = 40
 
-speed_set = 1000
-omega_set = (speed_set * 2 * np.pi) / 60
+# SET SPEED IN RPM
+SPEED_RPM_SET = 2000
+OMEGA_SPEED = (SPEED_RPM_SET * 2 * np.pi) / 60
 
 
 Q = np.eye(2)
@@ -25,7 +28,7 @@ t = np.linspace(0, 10, 2000)
 t_ricc = t[::-1]  # reverset time for riccati equation
 # t_ricc = np.linspace(10, 0, 1000)
 
-X0 = np.array([omega_set, 0])
+X0 = np.array([[0, OMEGA_SPEED]]).T
 U0 = 0
 
 
@@ -59,12 +62,13 @@ def model(x, t):
 
 def model_ricc(x, t):
     x = np.array([x]).T
-
     P = np.array([[P11(t), P12(t)], [P21(t), P22(t)]])
 
     K = inv(R) @ B.T @ P
 
     nx = x - X0
+    nx[1] = np.clip(nx[1], -CURRENT_LIMIT, CURRENT_LIMIT)
+
     nu = -K @ nx + U0
 
     dx = A @ nx + B * nu
@@ -75,6 +79,7 @@ def model_ricc(x, t):
 res_model = odeint(model, [0, 0], t)
 ricc_model = odeint(model_ricc, [0, 0], t, full_output=0)
 
+print(f"OMEGA SET: {OMEGA_SPEED}")
 
 fig, axs = plt.subplots(2, 2)
 fig.suptitle("DC motor simulation")
@@ -88,7 +93,7 @@ axs[0, 1].plot(t, res_model[:, 1])
 axs[1, 0].set_title("Ricc current")
 axs[1, 0].plot(t, ricc_model[:, 0])
 
-axs[1, 1].set_title("Ricc rotational speed")
+axs[1, 1].set_title(f"Ricc rotational speed $\omega$ = {OMEGA_SPEED:.2f}")
 axs[1, 1].plot(t, ricc_model[:, 1])
 
 
