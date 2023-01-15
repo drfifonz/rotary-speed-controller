@@ -1,18 +1,12 @@
-from flask import Flask
-from flask import request
-from flask import render_template
-import sys, os
+import os
 
-import base64
-from io import BytesIO
-from matplotlib.figure import Figure
+from flask import Flask, render_template, request
 
 from model import graph
 
 app = Flask(__name__)
 
 
-# @app.route("/graph", methods=["GET", "POST"])
 @app.route("/graph", methods=["GET", "POST"])
 def draw_graph():
     speed = request.form.get("speed", default=2000, type=int)

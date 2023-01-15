@@ -33,6 +33,8 @@ conda env create -f env.yml
 ```
 Start local http server by runnig following command:
 ```bash
+python src/server.py
 ```
+Visualization is avalible at `localhost:8000/graph`
 
 [model]: data/model.png "Model diagram"
